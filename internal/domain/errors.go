@@ -1,6 +1,9 @@
 package domain
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type ErrorCode string
 
@@ -76,3 +79,13 @@ func NewNotFoundError(resource string) ErrorResponse {
 		fmt.Sprintf("%s not found", resource),
 	)
 }
+
+var (
+	ErrTeamAlreadyExists = errors.New("team already exists")
+	ErrPRAlreadyExists   = errors.New("pr already exists")
+	ErrPRMerged          = errors.New("pr already merged")
+	ErrNotAssigned       = errors.New("user is not assigned as reviewer")
+	ErrNoCandidate       = errors.New("no available candidates")
+	ErrNotFound          = errors.New("not found")
+	ErrAuthorNotFound    = errors.New("author not found")
+)

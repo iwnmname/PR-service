@@ -52,7 +52,7 @@ func (u *Usecase) CreatePR(ctx context.Context, req domain.CreatePRRequest) (*do
 	}
 
 	if exists {
-		return nil, fmt.Errorf("pr already exists")
+		return nil, domain.ErrPRAlreadyExists
 	}
 
 	author, err := u.userRepo.GetByID(ctx, req.AuthorID)
@@ -61,7 +61,7 @@ func (u *Usecase) CreatePR(ctx context.Context, req domain.CreatePRRequest) (*do
 	}
 
 	if author == nil {
-		return nil, fmt.Errorf("author not found")
+		return nil, domain.ErrAuthorNotFound
 	}
 
 	activeMembers, err := u.userRepo.GetActiveByTeam(ctx, author.TeamName)
@@ -174,11 +174,11 @@ func (u *Usecase) ReassignReviewer(ctx context.Context, req domain.ReassignRevie
 	}
 
 	if pr == nil {
-		return nil, "", fmt.Errorf("pr not found")
+		return nil, "", domain.ErrNotFound
 	}
 
 	if pr.Status == domain.PRStatusMerged {
-		return nil, "", fmt.Errorf("pr already merged")
+		return nil, "", domain.ErrPRMerged
 	}
 
 	isReviewer, err := u.prRepo.IsReviewer(ctx, req.PullRequestID, req.OldUserID)
@@ -187,7 +187,7 @@ func (u *Usecase) ReassignReviewer(ctx context.Context, req domain.ReassignRevie
 	}
 
 	if !isReviewer {
-		return nil, "", fmt.Errorf("user is not assigned as reviewer")
+		return nil, "", domain.ErrNotAssigned
 	}
 
 	oldReviewer, err := u.userRepo.GetByID(ctx, req.OldUserID)
@@ -196,7 +196,7 @@ func (u *Usecase) ReassignReviewer(ctx context.Context, req domain.ReassignRevie
 	}
 
 	if oldReviewer == nil {
-		return nil, "", fmt.Errorf("old reviewer not found")
+		return nil, "", domain.ErrNotFound
 	}
 
 	activeMembers, err := u.userRepo.GetActiveByTeam(ctx, oldReviewer.TeamName)
@@ -223,12 +223,12 @@ func (u *Usecase) ReassignReviewer(ctx context.Context, req domain.ReassignRevie
 	}
 
 	if len(candidates) == 0 {
-		return nil, "", fmt.Errorf("no available candidates")
+		return nil, "", domain.ErrNoCandidate
 	}
 
 	selected := u.selectRandomReviewers(candidates, 1)
 	if len(selected) == 0 {
-		return nil, "", fmt.Errorf("no available candidates")
+		return nil, "", domain.ErrNoCandidate
 	}
 
 	newReviewer := selected[0]

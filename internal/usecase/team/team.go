@@ -45,7 +45,7 @@ func (u *Usecase) CreateTeam(ctx context.Context, req domain.CreateTeamRequest) 
 	}
 
 	if exists {
-		return nil, fmt.Errorf("team already exists")
+		return nil, domain.ErrTeamAlreadyExists
 	}
 
 	var createdMembers []domain.TeamMember
