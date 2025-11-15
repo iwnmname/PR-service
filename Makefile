@@ -1,4 +1,4 @@
-.PHONY: help lint lint-fix test build run docker-up docker-down clean
+.PHONY: help lint lint-fix test build run docker-up docker-down clean load-test
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -36,5 +36,9 @@ test-e2e:
 	@echo "\n=== E2E Test Results ==="
 	@docker logs reviewer_e2e_tests
 	@docker-compose -f docker-compose.e2e.yml down -v
+
+load-test:
+	@echo "Starting load test..."
+	@cd load-test && go run main.go
 
 .DEFAULT_GOAL := help

@@ -99,3 +99,15 @@ docker-compose -f docker-compose.e2e.yml up --build -d
 docker logs -f reviewer_e2e_tests
 docker-compose -f docker-compose.e2e.yml down -v
 ```
+
+### 7. Нагрузочные тесты
+
+Автоматические load-тесты:
+
+```bash
+# Запустить основной сервис
+docker-compose up -d
+
+# Запустить нагрузочные тесты
+make test-load
+```
