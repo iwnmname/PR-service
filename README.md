@@ -21,3 +21,61 @@ git clone https://github.com/iwnmname/PR-service.git
 
 # Запускаем сервис (БД + миграции + приложение)
 docker-compose up --build
+```
+
+Сервис будет доступен на `http://localhost:8080`
+
+### Остановка
+
+```bash
+# Остановить
+docker-compose down
+
+# Остановить и удалить данные
+docker-compose down -v
+```
+
+## Примеры использования
+
+### 1. Создать команду с участниками
+
+```bash
+curl -X POST http://localhost:8080/team/add \
+  -H "Content-Type: application/json" \
+  -d '{
+    "team_name": "backend",
+    "members": [
+      {"user_id": "u1", "username": "Alice", "is_active": true},
+      {"user_id": "u2", "username": "Bob", "is_active": true},
+      {"user_id": "u3", "username": "Charlie", "is_active": true}
+    ]
+  }'
+```
+
+### 2. Создать PR (автоматически назначит ревьюеров)
+
+```bash
+curl -X POST http://localhost:8080/pullRequest/create \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pull_request_id": "pr-1001",
+    "pull_request_name": "Add search feature",
+    "author_id": "u1"
+  }'
+```
+
+### 3. Изменить активность пользователя
+
+```bash
+curl -X POST http://localhost:8080/users/setIsActive \
+  -H "Content-Type: application/json" \
+  -d '{"user_id": "u2", "is_active": false}'
+```
+
+### 4. Смерджить PR
+
+```bash
+curl -X POST http://localhost:8080/pullRequest/merge \
+  -H "Content-Type: application/json" \
+  -d '{"pull_request_id": "pr-1001"}'
+```
