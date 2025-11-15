@@ -28,4 +28,13 @@ clean:
 	rm -rf bin/
 	go clean -cache -modcache -testcache
 
+test-e2e:
+	@echo "Starting E2E tests..."
+	@docker-compose -f docker-compose.e2e.yml up --build -d
+	@echo "Waiting for tests to complete..."
+	@docker wait reviewer_e2e_tests
+	@echo "\n=== E2E Test Results ==="
+	@docker logs reviewer_e2e_tests
+	@docker-compose -f docker-compose.e2e.yml down -v
+
 .DEFAULT_GOAL := help
