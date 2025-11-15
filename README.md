@@ -79,3 +79,8 @@ curl -X POST http://localhost:8080/pullRequest/merge \
   -H "Content-Type: application/json" \
   -d '{"pull_request_id": "pr-1001"}'
 ```
+
+### 5. Получить статистику сервиса
+
+```bash
+curl http://localhost:8080/statistics
