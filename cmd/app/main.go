@@ -18,9 +18,11 @@ import (
 	"github.com/iwnmname/PR-service.git/internal/middleware"
 	"github.com/iwnmname/PR-service.git/internal/pkg/transaction"
 	prRepo "github.com/iwnmname/PR-service.git/internal/repository/pr"
+	statsRepo "github.com/iwnmname/PR-service.git/internal/repository/stats"
 	teamRepo "github.com/iwnmname/PR-service.git/internal/repository/team"
 	userRepo "github.com/iwnmname/PR-service.git/internal/repository/user"
 	prUsecase "github.com/iwnmname/PR-service.git/internal/usecase/pr"
+	statsUsecase "github.com/iwnmname/PR-service.git/internal/usecase/stats"
 	teamUsecase "github.com/iwnmname/PR-service.git/internal/usecase/team"
 	userUsecase "github.com/iwnmname/PR-service.git/internal/usecase/user"
 )
@@ -63,6 +65,10 @@ func run() error {
 	userHandler := handler.NewUserHandler(userUsecaseInstance)
 	prHandler := handler.NewPRHandler(prUsecaseInstance)
 
+	statsRepository := statsRepo.NewRepository(db)
+	statsUsecaseInstance := statsUsecase.NewUsecase(statsRepository)
+	statsHandler := handler.NewStatsHandler(statsUsecaseInstance)
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/team/add", teamHandler.CreateTeam)
@@ -72,6 +78,7 @@ func run() error {
 	mux.HandleFunc("/pullRequest/merge", prHandler.MergePR)
 	mux.HandleFunc("/pullRequest/reassign", prHandler.ReassignReviewer)
 	mux.HandleFunc("/users/getReview", prHandler.GetUserReviews)
+	mux.HandleFunc("/statistics", statsHandler.GetStatistics)
 
 	handler := middleware.Recovery(middleware.Logger(mux))
 
