@@ -128,3 +128,22 @@ type DBReviewer struct {
 	UserID        UserID
 	AssignedAt    time.Time
 }
+
+type UserAssignmentStat struct {
+	UserID          UserID `json:"user_id"`
+	Username        string `json:"username"`
+	AssignmentsCount int    `json:"assignments_count"`
+}
+
+type PRStatusStat struct {
+	Status PRStatus `json:"status"`
+	Count  int      `json:"count"`
+}
+
+type StatisticsResponse struct {
+	TotalUsers      int                  `json:"total_users"`
+	TotalTeams      int                  `json:"total_teams"`
+	TotalPRs        int                  `json:"total_prs"`
+	PRsByStatus     []PRStatusStat       `json:"prs_by_status"`
+	TopReviewers    []UserAssignmentStat `json:"top_reviewers"`
+}
