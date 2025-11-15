@@ -109,5 +109,5 @@ docker-compose -f docker-compose.e2e.yml down -v
 docker-compose up -d
 
 # Запустить нагрузочные тесты
-make test-load
+make load-test
 ```
