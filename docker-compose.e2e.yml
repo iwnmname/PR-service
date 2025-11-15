@@ -1,0 +1,63 @@
+services:
+  postgres_e2e:
+    image: postgres:15-alpine
+    container_name: reviewer_postgres_e2e
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: reviewer_service_e2e
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  migrate_e2e:
+    image: migrate/migrate
+    container_name: reviewer_migrate_e2e
+    volumes:
+      - ./migrations:/migrations
+    command: [
+      "-path", "/migrations",
+      "-database", "postgres://postgres:postgres@postgres_e2e:5432/reviewer_service_e2e?sslmode=disable",
+      "up"
+    ]
+    depends_on:
+      postgres_e2e:
+        condition: service_healthy
+    restart: "no"
+
+  app_e2e:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: reviewer_app_e2e
+    environment:
+      DB_HOST: postgres_e2e
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: reviewer_service_e2e
+      DB_SSLMODE: disable
+      APP_PORT: 8080
+      APP_ENV: testing
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/statistics"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    depends_on:
+      postgres_e2e:
+        condition: service_healthy
+      migrate_e2e:
+        condition: service_completed_successfully
+
+  e2e_tests:
+    build:
+      context: ./e2e
+      dockerfile: Dockerfile
+    container_name: reviewer_e2e_tests
+    depends_on:
+      app_e2e:
+        condition: service_healthy

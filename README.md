@@ -84,3 +84,18 @@ curl -X POST http://localhost:8080/pullRequest/merge \
 
 ```bash
 curl http://localhost:8080/statistics
+```
+
+### 6. E2E тесты
+
+Автоматические end-to-end тесты:
+
+```bash
+# Запустить E2E тесты
+make test-e2e
+
+# Или вручную
+docker-compose -f docker-compose.e2e.yml up --build -d
+docker logs -f reviewer_e2e_tests
+docker-compose -f docker-compose.e2e.yml down -v
+```
